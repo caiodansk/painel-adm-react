@@ -16,7 +16,7 @@ const CredentialDetail = () => {
   if (!credential) {
     return (
       <div className="card p-8 text-center">
-        <p className="text-lg text-secondary">Credencial não encontrada</p>
+        <p className="text-lg text-secondary">pedido não encontrado</p>
         <Button
           variant="outline"
           onClick={() => navigate('/credentials')}
@@ -52,7 +52,7 @@ const CredentialDetail = () => {
       </div>
       
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Detalhes da Credencial</h1>
+        <h1 className="text-2xl font-bold">Detalhes de pedidos</h1>
         <div className="flex space-x-4">
           <div style={{ position: 'relative' }}>
             <select
@@ -177,7 +177,7 @@ const CredentialDetail = () => {
         </div>
         
         <div className="card">
-          <h2 className="text-xl font-semibold mb-6">Informações da Credencial</h2>
+          <h2 className="text-xl font-semibold mb-6">Informações de pedidos</h2>
           
           <div className="space-y-4">
             <div>
