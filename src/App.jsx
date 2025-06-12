@@ -42,8 +42,8 @@ function AppRoutes() {
             <MainLayout />
           </ProtectedRoute>
         }>
-          <Route index element={<Navigate to="/dashboard\" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard/" element={<Dashboard />} />
           <Route path="credentials" element={<CredentialList />} />
           <Route path="credentials/:id" element={<CredentialDetail />} />
           <Route path="logs" element={<LogsList />} />

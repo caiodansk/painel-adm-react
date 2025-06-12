@@ -4,6 +4,7 @@ import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
+import { loginUser } from '../services/auth';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,18 +12,9 @@ const Login = () => {
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
+  
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    
-    try {
-      await login(email, password);
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Email ou senha inválidos');
-    }
-  };
+  
 
   return (
     <div className="login-container">
@@ -43,7 +35,7 @@ const Login = () => {
             </div>
           )}
           
-          <form onSubmit={handleSubmit} className="w-full space-y-4">
+          <form className="w-full space-y-4">
             <div className="form-group">
               <label htmlFor="email" className="form-label">
                 Email
@@ -81,10 +73,11 @@ const Login = () => {
             </div>
             
             <Button
-              type="submit"
+              type="button"
               variant="primary"
               fullWidth
               disabled={isLoading}
+              onClick={() => loginUser(email, password, navigate)}
             >
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
