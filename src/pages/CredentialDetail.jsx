@@ -88,7 +88,7 @@ const CredentialDetail = () => {
               <div style={{
                 backgroundColor: 'rgba(34, 104, 178, 0.1)',
                 padding: '0.5rem',
-                borderRadius: '50%',
+                borderRadius: '51%',
                 marginRight: '0.75rem'
               }}>
                 <User style={{ width: '1.25rem', height: '1.25rem', color: 'var(--color-primary)' }} />
