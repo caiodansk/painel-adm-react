@@ -1,14 +1,10 @@
 import React from 'react';
-import { Hexagon } from 'lucide-react';
+import sescLogo from '../../assets/sesc.png';
 
-const Logo = () => {
-  return (
-    <div className="flex items-center">
-      <Hexagon className="logo-icon" strokeWidth={2} />
-      <span className="logo-text">SESC</span>
-      <span className="logo-admin">Admin</span>
-    </div>
-  );
-};
+const Logo = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <img src={sescLogo} alt="Logo SESC" style={{ width: '180px', height: 'auto' }} />
+  </div>
+);
 
 export default Logo;

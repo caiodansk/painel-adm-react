@@ -25,7 +25,7 @@ export const mockCredentials = [
   },
   {
     id: '3',
-    name: 'Mariana Oliveira',
+    name: 'Mariana Jamanta',
     cpf: '456.789.123-00',
     status: 'analysis',
     createdAt: '2025-03-12T11:20:00',

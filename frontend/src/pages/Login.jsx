@@ -20,13 +20,12 @@ const Login = () => {
     <div className="login-container">
       <div className="login-form">
         <div className="login-card">
-          <div className="mb-6 mt-2">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}>
             <Logo />
+            <h1 className="text-2xl font-bold text-primary mb-6">
+              Painel Administrativo
+            </h1>
           </div>
-          
-          <h1 className="text-2xl font-bold text-primary mb-6">
-            Painel Administrativo
-          </h1>
           
           {error && (
             <div className="error-message">
@@ -47,7 +46,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="input input-with-icon"
-                  placeholder="seu.email@sesc.org.br"
+                  placeholder="exemplo@sesc.org.br"
                   required
                 />
                 <Mail className="input-icon" />
@@ -82,10 +81,6 @@ const Login = () => {
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
           </form>
-          
-          <div className="mt-6 text-center text-sm text-secondary">
-            <p>Demo: admin@sesc.org.br / password</p>
-          </div>
         </div>
       </div>
     </div>
