@@ -1,19 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Edit, ChevronLeft, User, Mail, Phone, MapPin, FileText, Clock } from 'lucide-react';
-import { mockCredentials } from '../data/mockData';
 import Button from '../components/ui/Button';
 import StatusBadge from '../components/ui/StatusBadge';
+import { getPedidoDetalhes, atualizarStatusPedido } from '../services/pedidos';
 
 const CredentialDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  const credential = mockCredentials.find(c => c.id === id);
-  
-  const [status, setStatus] = useState(credential?.status || 'analysis');
-  
-  if (!credential) {
+
+  const [status, setStatus] = useState('');
+  const [pedido, setPedido] = useState(null);
+
+  const carregarPedido = () => {
+    getPedidoDetalhes(id, (data) => {
+      setPedido(data);
+      setStatus(data.status_pedido);
+    });
+  };
+
+  useEffect(() => {
+    carregarPedido();
+  }, [id]);
+
+  if (!pedido) {
     return (
       <div className="card p-8 text-center">
         <p className="text-lg text-secondary">pedido não encontrado</p>
@@ -30,6 +40,11 @@ const CredentialDetail = () => {
 
   const handleStatusChange = (newStatus) => {
     setStatus(newStatus);
+  };
+
+  const handleAtualizarStatus = async () => {
+    await atualizarStatusPedido(id, status);
+    carregarPedido();
   };
 
   return (
@@ -50,7 +65,7 @@ const CredentialDetail = () => {
           <span>Voltar para a listagem</span>
         </button>
       </div>
-      
+
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Detalhes de pedidos</h1>
         <div className="flex space-x-4">
@@ -60,29 +75,29 @@ const CredentialDetail = () => {
               onChange={(e) => handleStatusChange(e.target.value)}
               className="input"
             >
-              <option value="active">Ativo</option>
-              <option value="inactive">Inativo</option>
-              <option value="analysis">Em Análise</option>
+              <option value="APROVADO">Ativo</option>
+              <option value="REJEITADO">Inativo</option>
+              <option value="PENDENTE">Em Análise</option>
             </select>
           </div>
-          
+
           <Button 
             variant="primary"
             icon={<Edit style={{ width: '1rem', height: '1rem' }} />}
-            onClick={() => navigate(`/credentials/${id}/edit`)}
+            onClick={handleAtualizarStatus}
           >
             Editar
           </Button>
         </div>
       </div>
-      
+
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
         <div className="card">
           <div className="flex justify-between items-start mb-6">
             <h2 className="text-xl font-semibold">Informações Pessoais</h2>
-            <StatusBadge status={status} />
+            <StatusBadge status={pedido.status_pedido} />
           </div>
-          
+
           <div className="space-y-4">
             <div className="flex items-start">
               <div style={{
@@ -95,10 +110,10 @@ const CredentialDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-secondary">Nome Completo</p>
-                <p className="font-medium">{credential.name}</p>
+                <p className="font-medium">{pedido.nome_pf}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start">
               <div style={{
                 backgroundColor: 'rgba(34, 104, 178, 0.1)',
@@ -110,10 +125,12 @@ const CredentialDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-secondary">CPF</p>
-                <p className="font-medium">{credential.cpf}</p>
+                <p className="font-medium">
+                  {pedido.cpf_pf?.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-start">
               <div style={{
                 backgroundColor: 'rgba(34, 104, 178, 0.1)',
@@ -125,10 +142,10 @@ const CredentialDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-secondary">Documento</p>
-                <p className="font-medium">{credential.documentNumber || 'Não informado'}</p>
+                <p className="font-medium">{pedido.rg_pf || 'Não informado'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start">
               <div style={{
                 backgroundColor: 'rgba(34, 104, 178, 0.1)',
@@ -140,10 +157,10 @@ const CredentialDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-secondary">Email</p>
-                <p className="font-medium">{credential.email || 'Não informado'}</p>
+                <p className="font-medium">{pedido.email_pf || 'Não informado'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start">
               <div style={{
                 backgroundColor: 'rgba(34, 104, 178, 0.1)',
@@ -155,10 +172,10 @@ const CredentialDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-secondary">Telefone</p>
-                <p className="font-medium">{credential.phoneNumber || 'Não informado'}</p>
+                <p className="font-medium">{pedido.fone_pf || 'Não informado'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start">
               <div style={{
                 backgroundColor: 'rgba(34, 104, 178, 0.1)',
@@ -170,26 +187,26 @@ const CredentialDetail = () => {
               </div>
               <div>
                 <p className="text-sm text-secondary">Endereço</p>
-                <p className="font-medium">{credential.address || 'Não informado'}</p>
+                <p className="font-medium">{pedido.endereco_pf || 'Não informado'}</p>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div className="card">
           <h2 className="text-xl font-semibold mb-6">Informações de pedidos</h2>
-          
+
           <div className="space-y-4">
             <div>
               <p className="text-sm text-secondary">Status Atual</p>
-              <StatusBadge status={status} />
+              <StatusBadge status={pedido.status_pedido} />
             </div>
-            
+
             <div>
               <p className="text-sm text-secondary">ID</p>
-              <p className="font-medium">{credential.id}</p>
+              <p className="font-medium">{pedido.id}</p>
             </div>
-            
+
             <div className="flex items-start">
               <div style={{
                 backgroundColor: 'rgba(34, 104, 178, 0.1)',
@@ -202,17 +219,11 @@ const CredentialDetail = () => {
               <div>
                 <p className="text-sm text-secondary">Data de Criação</p>
                 <p className="font-medium">
-                  {new Date(credential.createdAt).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
+                  {new Date(pedido.data_pedido).toLocaleDateString('pt-BR')}
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start">
               <div style={{
                 backgroundColor: 'rgba(34, 104, 178, 0.1)',
@@ -225,7 +236,7 @@ const CredentialDetail = () => {
               <div>
                 <p className="text-sm text-secondary">Última Atualização</p>
                 <p className="font-medium">
-                  {new Date(credential.updatedAt).toLocaleDateString('pt-BR', {
+                  {new Date(pedido.updated_at).toLocaleDateString('pt-BR', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',

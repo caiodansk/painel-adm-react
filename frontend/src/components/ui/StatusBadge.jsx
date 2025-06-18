@@ -3,17 +3,17 @@ import React from 'react';
 const StatusBadge = ({ status }) => {
   const getStatusConfig = () => {
     switch (status) {
-      case 'active':
+      case 'APROVADO':
         return {
           className: 'badge-success',
           label: 'Ativo',
         };
-      case 'inactive':
+      case 'REJEITADO':
         return {
           className: 'badge-error',
           label: 'Inativo',
         };
-      case 'analysis':
+      case 'PENDENTE':
         return {
           className: 'badge-warning',
           label: 'Em Análise',

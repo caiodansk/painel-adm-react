@@ -3,7 +3,7 @@ import { Bell, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
-  const { user } = useAuth();
+  const user = localStorage.getItem('userEmail')
 
   return (
     <header className="header">
@@ -37,7 +37,7 @@ const Header = () => {
             <User style={{ width: '1.25rem', height: '1.25rem' }} />
           </div>
           <div>
-            <p className="text-sm font-medium">{user?.name || 'Usuário'}</p>
+            <p className="text-sm font-medium">{ user || 'Usuário'}</p>
             <p className="text-xs text-secondary">{user?.role || 'Cargo'}</p>
           </div>
         </div>

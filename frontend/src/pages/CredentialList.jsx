@@ -1,29 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Filter } from 'lucide-react';
-import { mockCredentials } from '../data/mockData';
 import Button from '../components/ui/Button';
 import SearchBar from '../components/ui/SearchBar';
 import StatusBadge from '../components/ui/StatusBadge';
+import { getPedidosCredencial } from '../services/pedidos';
+
+const formatCPF = (cpf) => {
+  if (!cpf) return '';
+  return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+};
 
 const CredentialList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  
+  const [pedidos, setPedidos] = useState([]);
+  const [filteredPedidos, setFilteredPedidos] = useState([]);
+
   const handleSearch = (term) => {
-    setSearchTerm(term);
+    setSearchTerm(term.toLowerCase());
   };
 
-  const filteredCredentials = mockCredentials
-    .filter(credential => {
-      const matchesSearch = 
-        credential.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        credential.cpf.includes(searchTerm);
-      
-      const matchesStatus = statusFilter === 'all' || credential.status === statusFilter;
-      
+  useEffect(() => {
+    getPedidosCredencial(setPedidos);
+  }, []);
+
+  useEffect(() => {
+    const filtered = pedidos.filter((p) => {
+      const matchesSearch =
+        p.nome_pf?.toLowerCase().includes(searchTerm) ||
+        p.cpf_pf?.includes(searchTerm.replace(/[^\d]/g, '')); // remove pontos e traços
+
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'active' && p.status_pedido === 'APROVADO') ||
+        (statusFilter === 'inactive' && p.status_pedido === 'REJEITADO') ||
+        (statusFilter === 'analysis' && p.status_pedido === 'PENDENTE');
+
       return matchesSearch && matchesStatus;
     });
+
+    setFilteredPedidos(filtered);
+  }, [pedidos, searchTerm, statusFilter]);
 
   return (
     <div className="space-y-6">
@@ -75,16 +93,14 @@ const CredentialList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredCredentials.map((credential) => (
+              {filteredPedidos.map((credential) => (
                 <tr key={credential.id}>
-                  <td>{credential.name}</td>
-                  <td>{credential.cpf}</td>
-                  <td>
-                    <StatusBadge status={credential.status} />
-                  </td>
-                  <td>{credential.email}</td>
-                  <td>{credential.phoneNumber}</td>
-                  <td>{new Date(credential.createdAt).toLocaleDateString('pt-BR')}</td>
+                  <td>{credential.nome_pf}</td>
+                  <td>{formatCPF(credential.cpf_pf)}</td>
+                  <td><StatusBadge status={credential.status_pedido} /></td>
+                  <td>{credential.email_pf}</td>
+                  <td>{credential.fone_pf}</td>
+                  <td>{new Date(credential.data_pedido).toLocaleDateString('pt-BR')}</td>
                   <td>
                     <div className="flex space-x-2">
                       <Link to={`/credentials/${credential.id}`}>
@@ -96,7 +112,7 @@ const CredentialList = () => {
                   </td>
                 </tr>
               ))}
-              {filteredCredentials.length === 0 && (
+              {filteredPedidos.length === 0 && (
                 <tr>
                   <td colSpan={7} style={{ padding: '1rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>
                     Nenhuma credencial encontrada
@@ -109,7 +125,7 @@ const CredentialList = () => {
         
         <div className="mt-6 flex justify-between items-center">
           <div className="text-sm text-secondary">
-            Exibindo {filteredCredentials.length} de {mockCredentials.length} credenciais
+            Exibindo {filteredPedidos.length} de {pedidos.length} credenciais
           </div>
           
           <div className="flex space-x-2">
